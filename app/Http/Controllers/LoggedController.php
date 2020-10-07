@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use App\Mail\UserAction;
 
 class LoggedController extends Controller
 {
@@ -15,6 +18,12 @@ class LoggedController extends Controller
   public function destroy($id) {
     $ord = Order::findOrFail($id);
     $ord -> delete();
+
+    $user = Auth::user();
+    $action = "DELETE";
+
+    Mail::to("admin@boolean.it") -> send(new UserAction($user, $ord, $action));
+
     return redirect() -> route('order-index');
   }
 
